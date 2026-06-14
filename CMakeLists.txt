@@ -21,9 +21,25 @@ find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "srv/FindWall.srv"
+  DEPENDENCIES std_msgs
+)
+
 # Add the wall follower executable
 add_executable(wall_follower_executable src/wall_follower.cpp)
-ament_target_dependencies(wall_follower_executable rclcpp geometry_msgs sensor_msgs)
+ament_target_dependencies(wall_follower_executable
+ rclcpp
+ geometry_msgs
+ sensor_msgs
+)
+
+target_link_libraries(wall_follower_executable
+  ${PROJECT_NAME}__rosidl_typesupport_cpp
+)
+
+# Ensures headers exist before the compiler attempts to open main.cpp
+#add_dependencies(wall_follower_executable ${PROJECT_NAME}__rosidl_generator_c)
 
 # Install the executable so 'ros2 run' can find it
 install(TARGETS
